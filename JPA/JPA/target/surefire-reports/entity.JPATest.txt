@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: entity.JPATest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.087 s <<< FAILURE! - in entity.JPATest
+test(entity.JPATest)  Time elapsed: 0.08 s  <<< ERROR!
+javax.persistence.PersistenceException: No Persistence provider for EntityManager named myJpa
+	at entity.JPATest.test(JPATest.java:18)
+

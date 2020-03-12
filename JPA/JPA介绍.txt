@@ -1,0 +1,53 @@
+JPA是什么
+JPA （Java Persistence API）Java持久化API。是一套Sun公司Java官方制定的ORM 方案,是规范，是标准 ，sun公司自己并没有实现.
+
+ORM是什么
+ORM（Object Relational Mapping）对象关系映射。
+
+其中Hibernate是众多实现者之中，性能最好的.
+
+入门示例
+任何框架的学习，都建议从配置流程图开始。所以我们来一起理解JPA的配置流程图。 
+
+配置流程图
+1、在实体类上使用JPA注解的形式配置映射关系
+2、配置JPA的核心配置文件persistence.xml(
+在java工程的src路径下创建一个名为META-INF的文件夹，在此文件夹下创建一个名为persistence.xml的配置文件)
+3、测试
+
+增删改查操作
+@Test
+	public void test() {
+		/**
+		 * 创建实体管理类工厂，借助Persistence的静态方法获取
+		 * 		其中传递的参数为持久化单元名称，需要jpa配置文件中指定
+		 */
+		EntityManagerFactory factory = Persistence.createEntityManagerFactory("myJpa");
+		//创建实体管理类
+		EntityManager em = factory.createEntityManager();
+		//获取事务对象
+		EntityTransaction tx = em.getTransaction();
+		//开启事务
+		tx.begin();
+		Customer c = new Customer();
+		c.setCustName("传智播客");
+		//保存操作
+		em.persist(c);
+		//提交事务
+		tx.commit();
+		//释放资源
+		em.close();
+		factory.close();
+	}
+
+表结构：
+ CREATE TABLE cst_customer (
+      cust_id bigint(32) NOT NULL AUTO_INCREMENT COMMENT '客户编号(主键)',
+      cust_name varchar(32) NOT NULL COMMENT '客户名称(公司名称)',
+      cust_source varchar(32) DEFAULT NULL COMMENT '客户信息来源',
+      cust_industry varchar(32) DEFAULT NULL COMMENT '客户所属行业',
+      cust_level varchar(32) DEFAULT NULL COMMENT '客户级别',
+      cust_address varchar(128) DEFAULT NULL COMMENT '客户联系地址',
+      cust_phone varchar(64) DEFAULT NULL COMMENT '客户联系电话',
+      PRIMARY KEY (`cust_id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
