@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context
+                 http://www.springframework.org/schema/context/spring-context.xsd
+                 http://www.springframework.org/schema/aop
+                 http://www.springframework.org/schema/aop/spring-aop.xsd
+                 http://www.springframework.org/schema/tx
+                 http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="dao"/>
+
+    <!-- 配置c3p0连接池 -->
+    <bean id="dataSource"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!-- 注入属性值 -->
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl"
+                  value="jdbc:mysql://localhost:3306/jpa"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>
+
+    <!--使用LocalContainerEntityManagerFactoryBean提供对EntityManagerFactory的全面控制-->
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="true"/>
+                <property name="database" value="MYSQL"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- 该Bean后处理器会告诉Spring处理DAO组件中的@PersistenceContext注解-->
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+    <!--事务-->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"/>
+    <!--开启注解式事务-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
