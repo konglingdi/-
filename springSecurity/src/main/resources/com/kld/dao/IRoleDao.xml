@@ -1,0 +1,19 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kld.dao.IRoleDao">
+    <resultMap id="roleMap" type="com.kld.bean.Role">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="roleName" column="roleName" jdbcType="VARCHAR"/>
+        <result property="roleDesc" column="roleDesc" jdbcType="VARCHAR"/>
+
+    </resultMap>
+
+    <select id="findRolesByUid" resultMap="roleMap" parameterType="java.lang.String">
+      select r.id,r.roleName,r.roleDesc
+      from role r
+      inner join users_role ur
+      on r.id = ur.roleId
+      and ur.userId = #{uid}
+    </select>
+</mapper>

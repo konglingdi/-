@@ -1,0 +1,26 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kld.dao.IUserDao">
+    <resultMap id="userInfoMap" type="com.kld.bean.UserInfo">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="phoneNum" column="phoneNum" jdbcType="VARCHAR"/>
+
+        <collection property="roleList" select="com.kld.dao.IRoleDao.findRolesByUid" column="id" />
+
+    </resultMap>
+
+    <select id="findUserInfoByUserName" resultMap="userInfoMap" parameterType="java.lang.String">
+      SELECT id,email,`username`, `password`, `phoneNum`, `status`
+      FROM users
+      WHERE
+      username = #{username}
+    </select>
+
+    <select id="selectAll" resultType="com.kld.bean.UserInfo">
+        select * from users
+    </select>
+</mapper>
