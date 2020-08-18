@@ -1,3 +1,5 @@
+
+
 elasticsearch
 
 ### 一、elasticsearch介绍
@@ -121,8 +123,103 @@ field类型：
 </dependency>
 ```
 
+**在spring-boot项目中的使用:**
+
+```xml
+<properties>
+    <java.version>1.8</java.version>
+    <!-- 指定es版本 -->
+    <elasticsearch.version>7.7.1</elasticsearch.version>
+</properties>
+  
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+</dependency>
+```
+
+**spring-boot项目中配置RestHighLevelClient实例对象**
+
+```java
+@Configuration
+public class ElasticSearchClientConfig {
+    @Bean
+    public RestHighLevelClient restHighLevelClient(){
+        RestHighLevelClient client = new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost("127.0.0.1", 9200,"http")));
+        return client;
+    }
+}
+```
+
+**高亮：**
+
+```java
+@Service
+public class ContentService {
+
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+    
+    //实现搜索功能
+    public List<Map<String, Object>> searchHighlightPage(String keyword, int page, int size) throws IOException {
+        if (page <= 1) {
+            page = 1;
+        }
+        //创建搜索请求
+        SearchRequest searchRequest = new SearchRequest("索引名");
+        //构造搜索参数
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		//设置需要精确查询的字段
+        TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("filed", keyword);
+        searchSourceBuilder.query(termQueryBuilder);
+        searchSourceBuilder.from((page - 1) * size);
+        searchSourceBuilder.size(size);
+        searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
+        //高亮
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        //设置高亮字段
+        highlightBuilder.field("filed");
+        //如果要多个字段高亮,这项要为false
+        highlightBuilder.requireFieldMatch(true);
+        highlightBuilder.preTags("<span style='color:red'>");
+        highlightBuilder.postTags("</span>");
+        
+		//下面这两项,如果你要高亮如文字内容等有很多字的字段,必须配置,不然会导致高亮不全,文章内容缺失等   
+		highlightBuilder.fragmentSize(800000); //最大高亮分片数
+   		highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+        searchSourceBuilder.highlighter(highlightBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse response = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (SearchHit hit : response.getHits().getHits()) {
+            Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+            //解析高亮字段
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            HighlightField field= highlightFields.get("field");
+            if(field!= null){
+                Text[] fragments = field.fragments();
+                String n_field = "";
+                for (Text fragment : fragments) {
+                    n_field += fragment;
+                }
+                //高亮标题覆盖原标题
+                sourceAsMap.put("field",n_field);
+            }
+            list.add(hit.getSourceAsMap());
+        }
+        return list;
+    }
+}
+```
+
+
+
 spring-boot集成es:https://www.cnblogs.com/linlf03/p/12828414.html
 
 启动head(后台)  ./elasticsearch-head/node_modules/grunt/bin/grunt server &
 
 高亮：https://blog.csdn.net/weixin_43155742/article/details/106720910?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~all~first_rank_v2~rank_v25-2-106720910.nonecase&utm_term=es%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BAjava%E5%AE%9E%E7%8E%B0
+
