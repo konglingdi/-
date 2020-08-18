@@ -202,7 +202,7 @@ http.cors.allow-origin: "*"
 5.7启动head插件服务（后台运行）
 
 ```java
-/elasticsearch-head/node_modules/grunt/bin/grunt server &
+./elasticsearch-head/node_modules/grunt/bin/grunt server &
 ```
 
 安装head插件遇到的问题：
