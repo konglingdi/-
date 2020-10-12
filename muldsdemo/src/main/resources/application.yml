@@ -1,0 +1,25 @@
+server:
+  port: 8080 # 启动端口
+spring:
+  datasource:
+    db1: # 数据源1
+      jdbc-url: jdbc:mysql://localhost:3306/db1?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=UTC
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    db2: # 数据源2
+      jdbc-url: jdbc:mysql://localhost:3306/db2?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=UTC
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    db3: # 数据源2
+      jdbc-url: jdbc:mysql://localhost:3306/db3?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=UTC
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  configuration:
+#    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
